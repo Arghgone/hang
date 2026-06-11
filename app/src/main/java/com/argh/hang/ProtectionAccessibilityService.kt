@@ -8,7 +8,8 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
- * Watches Settings / package-installer / system UI screens. When the screen
+ * Watches all app screens, including Settings, the system package installer,
+ * the Play Store, and third-party uninstallers/cleaners. When a screen
  * relates to a protected app AND a protected action, it backs out of the
  * screen and launches the verification interruption, unless the package was
  * recently unlocked by a successful passage verification.
@@ -29,6 +30,12 @@ class ProtectionAccessibilityService : AccessibilityService() {
         ) {
             return
         }
+
+        // All apps are monitored (Settings, Play Store, package installer,
+        // third-party uninstallers/cleaners). Skip our own UI so the
+        // verification screen is never intercepted by itself.
+        val sourcePackage = event.packageName?.toString()
+        if (sourcePackage == null || sourcePackage == packageName) return
 
         val now = SystemClock.elapsedRealtime()
         if (now - lastInterceptAt < INTERCEPT_DEBOUNCE_MS) return

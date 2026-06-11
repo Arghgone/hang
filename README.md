@@ -11,7 +11,8 @@ but to create a meaningful pause between impulse and action.
 ## How it works
 
 1. An **AccessibilityService** (`ProtectionAccessibilityService`) monitors
-   Settings, package-installer, and system UI screens.
+   all app screens, including Settings, the system package installer, the
+   Play Store, and third-party uninstallers.
 2. When a screen relates to a **protected app** and a **protected action**,
    the service backs out of the screen and launches a full-screen
    **interruption** (`VerificationActivity`).
