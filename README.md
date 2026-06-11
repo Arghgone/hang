@@ -1,93 +1,59 @@
-# hang
+# Hang: Android Impulse-Control Protection System
 
+Hang prevents impulsive changes to selected applications by introducing a
+deliberate friction mechanism: before a protected action (uninstall, disable,
+force stop, permission changes, and more) can proceed, the user must manually
+type a self-chosen passage exactly as shown.
 
+The goal is not to permanently block the user from controlling their device,
+but to create a meaningful pause between impulse and action.
 
-## Getting started
+## How it works
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+1. An **AccessibilityService** (`ProtectionAccessibilityService`) monitors
+   Settings, package-installer, and system UI screens.
+2. When a screen relates to a **protected app** and a **protected action**,
+   the service backs out of the screen and launches a full-screen
+   **interruption** (`VerificationActivity`).
+3. The user must type the configured passage into a hardened text field
+   (`SecureEditText`) that blocks paste, autofill, suggestions, drag-and-drop,
+   and bulk text insertion. There is no shortcut button.
+4. On an exact match (case sensitivity is configurable), the action is
+   **temporarily unlocked for 60 seconds** so it can be completed, after which
+   protection resumes automatically.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Protected actions
 
-## Add your files
+Uninstall, disable, hide, force stop, device-admin removal, permission
+changes, "Display over other apps", accessibility access, notification
+access, battery optimization, and usage access.
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Setup
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/argh-group/hang.git
-git branch -M main
-git push -uf origin main
-```
+1. Build and install the app (`./gradlew :app:assembleDebug`).
+2. Open the app and tap **Open Accessibility Settings**, then enable
+   **Hang Impulse-Control Protection**.
+3. Select the protected actions and apps, define your verification passage
+   (minimum 20 characters), and choose strict (case-sensitive) or relaxed
+   matching.
+4. Save. Changing the passage later requires typing the current passage first.
 
-## Integrate with your tools
+## Project structure
 
-* [Set up project integrations](https://gitlab.com/argh-group/hang/-/settings/integrations)
+| File | Purpose |
+| --- | --- |
+| `ProtectionAccessibilityService.kt` | Detects protected-action screens |
+| `VerificationActivity.kt` | Full-screen typed-confirmation interruption |
+| `SecureEditText.kt` | Anti-bypass input field |
+| `ConfigRepository.kt` | DataStore-backed configuration |
+| `UnlockManager.kt` | Temporary unlock window after verification |
+| `MainActivity.kt` | Setup and secured passage-update workflow |
 
-## Collaborate with your team
+## Known limitations
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Detection is text/keyword based and may need tuning per OEM Settings app.
+- Android does not allow apps to hard-block system actions; the service
+  relies on backing out of screens, so extremely fast actions may slip
+  through on some devices.
+- ADB / safe mode can bypass protection by design; the system targets
+  impulsive in-device actions, not determined adversaries.
