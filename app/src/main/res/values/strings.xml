@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hang Protection</string>
+    <string name="accessibility_service_label">Hang Impulse-Control Protection</string>
+    <string name="accessibility_service_description">Detects attempts to uninstall, disable, force stop, or modify settings and permissions of protected apps, and requires a deliberate typed confirmation before the action can proceed.</string>
+    <string name="verification_intro">You previously chose to protect this application from impulsive changes.\n\nTo continue, type the following passage exactly as shown:</string>
+    <string name="verify_button">Verify</string>
+    <string name="mismatch_message">The text does not match. The action remains blocked. Please try again.</string>
+    <string name="match_message">Verified. The action is temporarily unlocked for 60 seconds.</string>
+</resources>
