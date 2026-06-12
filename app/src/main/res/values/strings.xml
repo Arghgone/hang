@@ -3,8 +3,36 @@
     <string name="app_name">Hang Protection</string>
     <string name="accessibility_service_label">Hang Impulse-Control Protection</string>
     <string name="accessibility_service_description">Detects attempts to uninstall, disable, force stop, or modify settings and permissions of protected apps, and requires a deliberate typed confirmation before the action can proceed.</string>
-    <string name="verification_intro">You previously chose to protect this application from impulsive changes.\n\nTo continue, type the following passage exactly as shown:</string>
+
+    <!-- Setup screen -->
+    <string name="setup_subtitle">Deliberate friction for the apps you choose to protect.</string>
+    <string name="section_service">Step 1 · Detection service</string>
+    <string name="service_hint">Enable the accessibility service so Hang can detect protected actions anywhere in the system.</string>
+    <string name="open_accessibility">Open Accessibility Settings</string>
+    <string name="section_actions">Step 2 · Protected actions</string>
+    <string name="section_apps">Step 3 · Protected apps</string>
+    <string name="protect_self">Hang Protection (this app)</string>
+    <string name="section_passage">Step 4 · Verification passage</string>
+    <string name="passage_strict">Strict matching (case-sensitive)</string>
+    <string name="save_config">Save Configuration</string>
+    <string name="passage_too_short">Passage must be at least 20 characters.</string>
+    <string name="saved">Saved.</string>
+
+    <!-- Secured passage change -->
+    <string name="confirm_passage_title">Confirm Passage Change</string>
+    <string name="confirm_passage_message">To change the passage, first type your current passage exactly.</string>
+    <string name="confirm_passage_hint">Type your current passage</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="passage_mismatch_current">Current passage did not match.</string>
+
+    <!-- Verification interruption -->
+    <string name="verification_title">Deliberate Pause</string>
+    <string name="verification_intro">You previously chose to protect this application from impulsive changes. To continue, type the following passage exactly as shown.</string>
+    <string name="blocked_action_format">Blocked action: %1$s\nApp: %2$s</string>
+    <string name="generic_action">Protected action</string>
+    <string name="passage_hint">Type the passage here</string>
     <string name="verify_button">Verify</string>
     <string name="mismatch_message">The text does not match. The action remains blocked. Please try again.</string>
-    <string name="match_message">Verified. The action is temporarily unlocked for 60 seconds.</string>
+    <string name="match_message">Verified. Unlocked for 60 seconds.</string>
 </resources>
