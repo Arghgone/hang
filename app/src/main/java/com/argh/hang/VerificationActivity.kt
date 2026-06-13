@@ -11,12 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Full-screen interruption shown when a protected action is detected.
- * The user must manually type the configured passage exactly before the
- * action is temporarily unlocked. There is no shortcut button.
  *
- * The activity signals its lifecycle to [UnlockManager] so the
- * accessibility service never stacks duplicate prompts, and logs every
- * verification outcome for bypass diagnostics.
+ * On success, grants a global AuthorizationSession for the configured
+ * duration. There is no shortcut button and the passage cannot be pasted
+ * or auto-filled.
  */
 class VerificationActivity : AppCompatActivity() {
 
@@ -26,36 +24,26 @@ class VerificationActivity : AppCompatActivity() {
     }
 
     private lateinit var repo: ConfigRepository
-    private var targetPackage: String = ""
     private var actionName: String? = null
     private var verified = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // The passage must be typed, never screenshotted or screen-recorded.
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE,
-        )
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+
         repo = ConfigRepository(this)
         val config = repo.snapshot()
 
-        targetPackage = intent.getStringExtra(EXTRA_PACKAGE) ?: ""
         actionName = intent.getStringExtra(EXTRA_ACTION)
         val actionLabel = actionName
             ?.let { ProtectedAction.fromName(it)?.label }
             ?: getString(R.string.generic_action)
-        val appLabel = try {
-            val info = packageManager.getApplicationInfo(targetPackage, 0)
-            packageManager.getApplicationLabel(info).toString()
-        } catch (e: Exception) {
-            targetPackage
-        }
 
-        UnlockManager.onPromptShown()
+        PromptState.onPromptShown()
 
         val d = { v: Int -> HangDesign.dp(this, v) }
         val card = HangDesign.card(this)
+
         card.addView(HangDesign.largeTitle(this, getString(R.string.verification_title)))
         card.addView(
             HangDesign.footnote(this, getString(R.string.verification_intro)).apply {
@@ -63,29 +51,34 @@ class VerificationActivity : AppCompatActivity() {
             },
         )
         card.addView(
-            HangDesign.body(
-                this,
-                getString(R.string.blocked_action_format, actionLabel, appLabel),
-            ).apply { setPadding(0, 0, 0, d(12)) },
+            HangDesign.body(this, getString(R.string.blocked_action_format, actionLabel)).apply {
+                setPadding(0, 0, 0, d(12))
+            },
         )
         card.addView(
             HangDesign.body(this, "\u201C${config.passage}\u201D").apply {
                 setTypeface(typeface, Typeface.BOLD)
-                setTextIsSelectable(false) // passage cannot be copied
+                setTextIsSelectable(false)
                 setPadding(0, 0, 0, d(16))
             },
         )
+
         val input = SecureEditText(this).apply {
             hint = getString(R.string.passage_hint)
             minLines = 3
             gravity = Gravity.TOP or Gravity.START
         }
+        // Android 14+: extra autofill hardening
+        input.importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        input.setAutofillHints(*(arrayOfNulls<String>(0)))
         HangDesign.styleField(input)
         card.addView(input)
+
         val status = HangDesign.footnote(this, "").apply {
             setTextColor(HangDesign.COLOR_DESTRUCTIVE)
             setPadding(0, d(8), 0, 0)
         }
+
         card.addView(
             HangDesign.pillButton(this, getString(R.string.verify_button)).apply {
                 setOnClickListener { button ->
@@ -97,17 +90,18 @@ class VerificationActivity : AppCompatActivity() {
                     }
                     if (matches) {
                         verified = true
-                        UnlockManager.grantUnlock(targetPackage)
-                        DiagnosticLog.verification(targetPackage, actionName, "success")
+                        AuthorizationSession.grant(config.authDurationMs)
+                        DiagnosticLog.verification(packageName, actionName, "success")
                         HangDesign.haptic(button, success = true)
+                        val minutes = config.authDurationMs / 60_000L
                         Toast.makeText(
                             this@VerificationActivity,
-                            getString(R.string.match_message),
+                            getString(R.string.match_message, minutes),
                             Toast.LENGTH_LONG,
                         ).show()
                         finish()
                     } else {
-                        DiagnosticLog.verification(targetPackage, actionName, "mismatch")
+                        DiagnosticLog.verification(packageName, actionName, "mismatch")
                         HangDesign.haptic(button, success = false)
                         status.text = getString(R.string.mismatch_message)
                         input.setText("")
@@ -132,7 +126,7 @@ class VerificationActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!verified) DiagnosticLog.verification(targetPackage, actionName, "dismissed")
-        UnlockManager.onPromptDismissed(targetPackage, actionName)
+        if (!verified) DiagnosticLog.verification(packageName, actionName, "dismissed")
+        PromptState.onPromptDismissed()
     }
 }

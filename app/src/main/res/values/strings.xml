@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hang Protection</string>
+    <string name="app_name">Hang</string>
     <string name="accessibility_service_label">Hang Impulse-Control Protection</string>
-    <string name="accessibility_service_description">Detects attempts to uninstall, disable, force stop, or modify settings and permissions of protected apps, and requires a deliberate typed confirmation before the action can proceed.</string>
+    <string name="accessibility_service_description">Detects attempts to uninstall, disable, force stop, hide, freeze, or modify permissions and settings of Hang, and requires a deliberate typed confirmation before the action can proceed.</string>
 
-    <!-- Setup screen -->
-    <string name="setup_subtitle">Deliberate friction for the apps you choose to protect.</string>
-    <string name="section_service">Step 1 · Detection service</string>
-    <string name="service_hint">Enable the accessibility service so Hang can detect protected actions anywhere in the system.</string>
-    <string name="open_accessibility">Open Accessibility Settings</string>
-    <string name="section_actions">Step 2 · Protected actions</string>
-    <string name="section_apps">Step 3 · Protected apps</string>
-    <string name="protect_self">Hang Protection (this app)</string>
-    <string name="section_passage">Step 4 · Verification passage</string>
+    <!-- Setup subtitle -->
+    <string name="setup_subtitle">Self-protecting persistent reminder overlay.</string>
+
+    <!-- Section headers -->
+    <string name="section_overlay">Overlay</string>
+    <string name="section_passage">Verification Passage</string>
+    <string name="section_service">Service</string>
+    <string name="section_health">System Health</string>
+    <string name="section_diagnostics">Diagnostics</string>
+
+    <!-- Overlay section -->
+    <string name="overlay_active">Overlay is active</string>
+    <string name="overlay_inactive">Overlay is inactive</string>
+    <string name="import_image">Import Image…</string>
+    <string name="image_loaded">Image loaded ✓</string>
+    <string name="image_imported">Image imported successfully.</string>
+    <string name="image_import_failed">Failed to import image. Please try again.</string>
+    <string name="position_label">Position</string>
+    <string name="grid_top">Top</string>
+    <string name="grid_mid">Mid</string>
+    <string name="grid_bot">Bot</string>
+    <string name="grid_left">L</string>
+    <string name="grid_center">C</string>
+    <string name="grid_right">R</string>
+    <string name="size_label">Size: %1$d dp</string>
+    <string name="opacity_label">Opacity: %1$d%%</string>
+    <string name="visible_portrait">Visible in portrait</string>
+    <string name="visible_landscape">Visible in landscape</string>
+    <string name="enable_overlay">Enable Overlay</string>
+    <string name="disable_overlay">Disable Overlay</string>
+    <string name="overlay_permission_lost_toast">Display-over-other-apps permission was removed. Please re-grant it.</string>
+
+    <!-- Passage section -->
     <string name="passage_strict">Strict matching (case-sensitive)</string>
-    <string name="save_config">Save Configuration</string>
+    <string name="auth_duration_label">Session duration: %1$d min</string>
+    <string name="save_passage">Save Passage</string>
     <string name="passage_too_short">Passage must be at least 20 characters.</string>
     <string name="saved">Saved.</string>
 
@@ -26,13 +51,46 @@
     <string name="cancel_button">Cancel</string>
     <string name="passage_mismatch_current">Current passage did not match.</string>
 
+    <!-- Service section -->
+    <string name="service_hint">Enable the accessibility service and grant battery/notification permissions so Hang can protect itself and keep the overlay running.</string>
+    <string name="open_accessibility">Open Accessibility Settings</string>
+    <string name="open_battery_opt">Request Battery Unrestricted</string>
+    <string name="request_notifications">Request Notification Permission</string>
+
+    <!-- System health section -->
+    <string name="health_overlay">Overlay window</string>
+    <string name="health_service">OverlayService running</string>
+    <string name="health_accessibility">Accessibility service</string>
+    <string name="health_overlay_perm">Display-over-apps permission</string>
+    <string name="health_battery">Battery unrestricted</string>
+
+    <!-- Diagnostics section -->
+    <string name="diag_empty">No recent log entries.</string>
+    <string name="export_logs">Export Logs</string>
+
     <!-- Verification interruption -->
     <string name="verification_title">Deliberate Pause</string>
-    <string name="verification_intro">You previously chose to protect this application from impulsive changes. To continue, type the following passage exactly as shown.</string>
-    <string name="blocked_action_format">Blocked action: %1$s\nApp: %2$s</string>
+    <string name="verification_intro">You previously chose to protect Hang from impulsive changes. To continue, type the following passage exactly as shown.</string>
+    <string name="blocked_action_format">Blocked action: %1$s</string>
     <string name="generic_action">Protected action</string>
     <string name="passage_hint">Type the passage here</string>
     <string name="verify_button">Verify</string>
     <string name="mismatch_message">The text does not match. The action remains blocked. Please try again.</string>
-    <string name="match_message">Verified. Unlocked for 60 seconds.</string>
+    <string name="match_message">Verified. Unlocked for %1$d minute(s).</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Hang</string>
+    <string name="notification_text">Reminder active</string>
+
+    <!-- Recovery wizard -->
+    <string name="recovery_title">Action Required</string>
+    <string name="recovery_accessibility_desc">Hang\'s accessibility service has been disabled. Without it, Hang cannot intercept attempts to weaken or remove it. Re-enable the service to restore protection.</string>
+    <string name="recovery_overlay_desc">The display-over-other-apps permission has been removed. The reminder overlay cannot appear without it. Re-grant the permission to restore the overlay.</string>
+    <string name="recovery_battery_desc">Hang has been placed under battery restriction. This will prevent the service from running reliably. Set Hang to Unrestricted to restore full functionality.</string>
+    <string name="recovery_notification_desc">Hang\'s notification channel has been disabled. The foreground service requires a visible notification to keep running. Re-enable notifications for Hang.</string>
+    <string name="recovery_open_accessibility">Open Accessibility Settings</string>
+    <string name="recovery_open_overlay">Grant Overlay Permission</string>
+    <string name="recovery_open_battery">Set Battery Unrestricted</string>
+    <string name="recovery_open_notifications">Open Notification Settings</string>
+    <string name="dismiss_button">Dismiss</string>
 </resources>

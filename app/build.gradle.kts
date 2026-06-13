@@ -11,8 +11,8 @@ android {
         applicationId = "com.argh.hang"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
     }
 
     buildTypes {
@@ -36,4 +36,10 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    // WorkManager — recovery scheduling and service watchdog
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // Coil — image loading for the overlay ImageView
+    implementation("io.coil-kt:coil:2.6.0")
+    // Activity result contracts (image picker)
+    implementation("androidx.activity:activity-ktx:1.9.0")
 }

@@ -3,20 +3,33 @@ package com.argh.hang
 import android.util.Log
 
 /**
- * Structured diagnostic logging used to identify missed bypass paths.
- * Logcat tag: HangProtect.
+ * Structured diagnostic logging. Writes to Logcat and maintains an in-memory
+ * circular buffer (last 200 entries) for display and export in the settings UI.
  *
- * Logged dimensions: current package, screen class, screen title, visible
- * text preview, active target app, detected action, trigger source,
- * interception decision, and verification outcome.
+ * Logcat tag: HangProtect.
  */
 object DiagnosticLog {
 
     private const val TAG = "HangProtect"
+    private const val MAX_ENTRIES = 200
 
-    /** Toggle for verbose bypass-hunting logs. */
     @Volatile
     var enabled: Boolean = true
+
+    private val buffer = ArrayDeque<String>(MAX_ENTRIES)
+
+    fun getRecentEntries(): List<String> = synchronized(buffer) { buffer.toList() }
+
+    private fun record(level: String, msg: String) {
+        if (!enabled) return
+        val ts = System.currentTimeMillis()
+        val entry = "[$ts] $level $msg"
+        synchronized(buffer) {
+            if (buffer.size >= MAX_ENTRIES) buffer.removeFirst()
+            buffer.addLast(entry)
+        }
+        Log.d(TAG, msg)
+    }
 
     fun screen(
         currentPackage: String?,
@@ -25,11 +38,10 @@ object DiagnosticLog {
         visibleTextPreview: String?,
         activeTarget: String?,
     ) {
-        if (!enabled) return
-        Log.d(
-            TAG,
-            "screen pkg=$currentPackage class=$className title=$screenTitle " +
-                "target=$activeTarget text=\"${visibleTextPreview?.take(300)}\"",
+        record(
+            "SCREEN",
+            "pkg=$currentPackage class=$className title=$screenTitle " +
+                "target=$activeTarget text=\"${visibleTextPreview?.take(200)}\"",
         )
     }
 
@@ -40,16 +52,30 @@ object DiagnosticLog {
         intercepted: Boolean,
         reason: String,
     ) {
-        if (!enabled) return
-        Log.i(
-            TAG,
-            "decision target=$targetPackage action=${action?.name} " +
+        record(
+            "DECISION",
+            "target=$targetPackage action=${action?.name} " +
                 "source=$triggerSource intercepted=$intercepted reason=$reason",
         )
     }
 
     fun verification(targetPackage: String?, action: String?, outcome: String) {
-        if (!enabled) return
-        Log.i(TAG, "verification target=$targetPackage action=$action outcome=$outcome")
+        record("VERIFY", "target=$targetPackage action=$action outcome=$outcome")
+    }
+
+    fun overlay(event: String, detail: String) {
+        record("OVERLAY", "event=$event detail=$detail")
+    }
+
+    fun recovery(event: String, detail: String) {
+        record("RECOVERY", "event=$event detail=$detail")
+    }
+
+    fun xosSurface(pkg: String, className: String?, event: String) {
+        record("XOS", "pkg=$pkg class=$className event=$event")
+    }
+
+    fun watchdog(event: String) {
+        record("WATCHDOG", event)
     }
 }

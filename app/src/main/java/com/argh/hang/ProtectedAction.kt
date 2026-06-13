@@ -1,22 +1,17 @@
 package com.argh.hang
 
 /**
- * Intent-level actions that can be protected for an app.
+ * Actions that can be performed on Hang itself and require authorization.
  *
- * Keywords are only the FALLBACK detection layer. Primary detection combines:
- *  1. protected-app launch detection (foreground package),
- *  2. settings-context classification (management packages + activity class
- *     names, see [SettingsContext]),
- *  3. sticky protected-app context tracking across nested settings screens
- *     (see [TargetContextTracker]),
- *  4. these keywords as a safety net across Android versions and OEM skins.
+ * Keywords are the FALLBACK detection layer. Primary detection combines:
+ *  1. Settings-context classification (management packages + activity class names).
+ *  2. These keywords as a safety net across Android versions and OEM skins.
+ *
+ * APP_LAUNCH is removed — Hang's settings screen can be opened freely.
+ * Only destructive/weakening actions require authorization.
  */
 enum class ProtectedAction(val label: String, val keywords: List<String>) {
 
-    APP_LAUNCH(
-        "Opening the app",
-        emptyList(),
-    ),
     UNINSTALL(
         "Uninstall / remove",
         listOf("uninstall", "remove app", "delete app", "remove this app", "app info", "app management"),
@@ -30,6 +25,9 @@ enum class ProtectedAction(val label: String, val keywords: List<String>) {
         listOf(
             "hide app", "hide apps", "hidden apps", "hide icon", "hide from home",
             "app visibility", "launcher visibility", "hide applications",
+            // XOS / XHide additions
+            "xhide", "hidden apps", "hide icon", "app vault",
+            "private space", "privacy space", "app visibility",
         ),
     ),
     FORCE_STOP(
@@ -42,6 +40,8 @@ enum class ProtectedAction(val label: String, val keywords: List<String>) {
             "hibernat", "app freezer", "freeze", "frozen apps", "deep sleep",
             "sleeping apps", "put app to sleep", "archive app", "unused apps",
             "pause app activity",
+            // XOS additions
+            "xos freezer", "app freezer", "freeze app", "frozen", "freezing",
         ),
     ),
     DEVICE_ADMIN(
@@ -76,9 +76,11 @@ enum class ProtectedAction(val label: String, val keywords: List<String>) {
             "battery optimization", "optimize battery usage", "battery usage",
             "unrestricted", "background activity", "background restriction",
             "restrict background", "battery saver", "power saving", "power saver",
-            "ultra power", "extreme battery", "super power saving",
             "adaptive battery", "background usage limits", "never sleeping apps",
             "aggressive battery", "high power",
+            // XOS additions
+            "ultra power", "extreme battery", "super saving", "autostart",
+            "background kill", "power center", "allowed apps",
         ),
     ),
     SPECIAL_ACCESS(

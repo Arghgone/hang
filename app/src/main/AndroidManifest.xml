@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Core permissions -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
@@ -12,6 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
 
+        <!-- Main settings screen -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -21,6 +30,7 @@
             </intent-filter>
         </activity>
 
+        <!-- Verification passage screen -->
         <activity
             android:name=".VerificationActivity"
             android:excludeFromRecents="true"
@@ -28,6 +38,26 @@
             android:launchMode="singleTask"
             android:taskAffinity="" />
 
+        <!-- Recovery wizard screen -->
+        <activity
+            android:name=".RecoveryWizardActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity="" />
+
+        <!-- Overlay foreground service -->
+        <service
+            android:name=".OverlayService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false"
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="overlay" />
+        </service>
+
+        <!-- Protection accessibility service -->
         <service
             android:name=".ProtectionAccessibilityService"
             android:exported="false"
@@ -40,5 +70,24 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+
+        <!-- Boot receivers -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".UserUnlockedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
